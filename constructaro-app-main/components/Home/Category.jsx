@@ -8,7 +8,8 @@ import CategoryItem from "../../components/Home/CategoryItem";
 import { useRouter } from "expo-router";
 
 // Default export function 'Category' component to display category list
-export default function Category() {
+export default function Category({explore=false,onCategorySelect}) {
+
   // Initializing a state to store the list of categories
   const [categoryList, setCategoryList] = useState([]);
   const router = useRouter(); // Initialize router for navigation
@@ -35,10 +36,19 @@ export default function Category() {
     });
   };
 
+  const onCategoryPressHandler=(item)=>{
+    if(!explore){
+      router.push('/workerslist/' + item.name) // Navigate to worker list by category
+    }
+    else{
+      onCategorySelect(item.name)
+    }
+  }
+
   return (
     <View>
       {/* Header View: Contains "Category" title and "View All" button */}
-      <View
+      {!explore&&<View
         style={{
           paddingLeft: 20,
           marginBottom: 10,
@@ -65,7 +75,7 @@ export default function Category() {
         >
           View All
         </Text>
-      </View>
+      </View>}
 
       {/* Main Content View: Contains FlatList to display categories */}
       <View style={{ marginLeft: 15 }}>
@@ -80,7 +90,7 @@ export default function Category() {
               category={item} // Pass category data as prop
               key={index} // Unique key for each item
               onCategoryPress={(category) => 
-                router.push('/workerslist/' + item.name) // Navigate to worker list by category
+                onCategoryPressHandler(item)
               }
             />
           )}

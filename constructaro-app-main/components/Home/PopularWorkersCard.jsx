@@ -1,14 +1,19 @@
 // Importing necessary components and libraries
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import { Colors } from "../../constants/Colors"; // Importing Colors constants
+import {useRouter} from "expo-router"
 
 // Default export function for PopularWorkersCard component
 // Props:
 // - worker: an object containing worker information (such as 'name', 'city', 'category', and 'imageUrl')
 export default function PopularWorkersCard({ worker }) {
+
+  const router=useRouter()
+
   return (
-    <View
+    <TouchableOpacity
+    onPress={()=>router.push("/workerdetail/"+worker?.id)}
       style={{
         marginLeft: 20, // Left margin to space out each card
         padding: 10, // Padding inside the card for spacing
@@ -97,6 +102,6 @@ export default function PopularWorkersCard({ worker }) {
           </Text>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }

@@ -30,7 +30,7 @@ export default function PopularWorkers() {
       console.log(doc.data()); // Log document data (for debugging)
 
       // Append each worker's data to the workersList state
-      setWorkersList((prev) => [...prev, doc.data()]);
+      setWorkersList((prev) => [...prev, {id:doc.id,...doc.data()}]);
     });
   };
 
@@ -62,7 +62,7 @@ export default function PopularWorkers() {
             marginTop: 5, // Slight space above 'View All' text
           }}
         >
-          View All
+          View   All
         </Text>
       </View>
 
