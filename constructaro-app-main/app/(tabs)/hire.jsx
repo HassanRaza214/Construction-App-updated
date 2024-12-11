@@ -12,6 +12,7 @@ export default function hire() {
   const [workersList,setWorkersList]=useState([])
 
   const GetWorkersByCategory=async(category)=>{
+    setWorkersList([])
     const q=query(collection(db,'WorkersList'),where('category','==',category))
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
@@ -23,7 +24,7 @@ export default function hire() {
   return (
     <View style={{
       padding:20,
-      marginTop:20
+      marginTop:20,
     }}>
       <Text style={{
         fontSize:30,
