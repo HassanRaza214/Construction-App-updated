@@ -11,12 +11,12 @@ export default function WorkersListCard({worker}) {
 <TouchableOpacity
       style={{
         padding: 10, // Padding around the card content
-        margin: 10, // Margin around the card
         borderRadius: 15, // Rounded edges for the card
         backgroundColor: Colors.ICON_BG, // Background color from Colors constant
         display: 'flex', // Enables flexbox layout
         flexDirection: 'row', // Positions items in a row
-        gap: 10, // Space between elements
+        gap:10, // Space between elements
+        marginVertical: -5,
       }}
       onPress={() => router.push('/workerdetail/' + worker.id)} // Navigate to worker detail page on press
     >
