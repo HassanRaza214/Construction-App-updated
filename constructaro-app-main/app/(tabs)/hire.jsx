@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { query, collection, getDocs, where } from "firebase/firestore";
 import { db } from "../../configs/FireBaseConfig";
 import { Colors } from './../../constants/Colors';
@@ -63,6 +63,7 @@ export default function Hire() {
   }, [allWorkersList]);
 
   return (
+    <ScrollView style={{backgroundColor:'#fff'}}>
     <View style={styles.container}>
       <Text style={styles.title}>Hire</Text>
 
@@ -85,6 +86,7 @@ export default function Hire() {
         <HireWorkersList workersList={filteredWorkers} />
       )}
     </View>
+    </ScrollView> 
   );
 }
 

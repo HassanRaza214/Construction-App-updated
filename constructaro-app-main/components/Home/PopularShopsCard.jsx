@@ -1,14 +1,14 @@
 // Importing necessary components and libraries
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { Colors } from "../../constants/Colors"; // Importing Colors constants
 
 // Default export for PopularShopsCard component
 // Props:
 // - shop: an object containing shop information (such as 'name' and 'imageUrl')
-export default function PopularShopsCard({ shop }) {
+export default function PopularShopsCard({ shop, onShopPress }) {
     return (
-        <View
+        <TouchableOpacity onPress={()=>onShopPress(shop)}
           style={{
             width: 80, // Width of each shop card
             marginLeft: 18, // Space on the left of each card
@@ -16,6 +16,7 @@ export default function PopularShopsCard({ shop }) {
             borderRadius: 15, // Rounded edges for the card container
             alignItems: 'center', // Center-aligns contents within the card
             justifyContent: 'center', // Vertically centers content in the card
+            display:'flex',
           }}
         >
           
@@ -28,8 +29,6 @@ export default function PopularShopsCard({ shop }) {
               borderRadius: 15, // Rounded edges for the image
               borderWidth: 1, // Border width for image
               borderColor: Colors.GRAY, // Border color taken from Colors constant
-              display: 'flex', // Sets display mode for flex layout
-              flex: 1, // Allows image to flexibly occupy available space
             }}
           />
           
@@ -63,6 +62,6 @@ export default function PopularShopsCard({ shop }) {
               25-30 mins {/* Displaying a fixed delivery time */}
             </Text>
           </View>
-        </View>
+        </TouchableOpacity>
       );
 }

@@ -5,11 +5,13 @@ import { Colors } from "../../constants/Colors"; // Importing colors from consta
 import { collection, getDocs, limit, query } from "firebase/firestore"; // Firebase Firestore functions
 import { db } from "../../configs/FireBaseConfig"; // Firebase database configuration
 import PopularShopsCard from "./PopularShopsCard"; // Component for rendering each shop card
+import { useRouter  } from "expo-router";
 
 // Default export function for PopularShops component
 export default function PopularShops() {
     // State to hold the list of popular shops
     const [shopsList, setShopsList] = useState([]);
+    const router=useRouter();
 
     // useEffect hook to fetch shops list when the component mounts
     useEffect(() => {
@@ -72,7 +74,7 @@ export default function PopularShops() {
                 showsHorizontalScrollIndicator={false} // Hide horizontal scrollbar
                 renderItem={({ item, index }) => (
                     // Render each item using PopularShopsCard component
-                    <PopularShopsCard key={index} shop={item} /> // Pass shop data as prop to PopularShopsCard
+                    <PopularShopsCard key={index} shop={item} onShopPress={(shop)=>router.push('/ProductList/' + item.name) } /> 
                 )}
             />
         </View>
