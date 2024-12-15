@@ -62,7 +62,7 @@ export default function PopularWorkers() {
             marginTop: 5, // Slight space above 'View All' text
           }}
         >
-          View   All
+          View All
         </Text>
       </View>
 

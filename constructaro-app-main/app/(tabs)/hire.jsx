@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { query, collection, getDocs, where } from "firebase/firestore";
@@ -38,66 +37,76 @@ export default function Hire() {
   }, []);
 
   // Fetch workers by category
-  const GetWorkersByCategory = useCallback(async (category) => {
-    try {
-      setLoading(true);
-      if (!category) {
-        // Reset to all workers if no category is selected
-        setWorkersList(allWorkersList);
-        setFilteredWorkers(allWorkersList);
-        return;
+  const GetWorkersByCategory = useCallback(
+    async (category) => {
+      try {
+        setLoading(true);
+        if (!category) {
+          // Reset to all workers if no category is selected
+          setWorkersList(allWorkersList);
+          setFilteredWorkers(allWorkersList);
+          return;
+        }
+        const q = query(collection(db, 'WorkersList'), where('category', '==', category));
+        const querySnapshot = await getDocs(q);
+        const workers = [];
+        querySnapshot.forEach((doc) => {
+          workers.push({ id: doc.id, ...doc.data() });
+        });
+        setWorkersList(workers);
+        setFilteredWorkers(workers);
+      } catch (error) {
+        console.error('Error fetching workers by category:', error);
+      } finally {
+        setLoading(false);
       }
-      const q = query(collection(db, 'WorkersList'), where('category', '==', category));
-      const querySnapshot = await getDocs(q);
-      const workers = [];
-      querySnapshot.forEach((doc) => {
-        workers.push({ id: doc.id, ...doc.data() });
-      });
-      setWorkersList(workers);
-      setFilteredWorkers(workers);
-    } catch (error) {
-      console.error('Error fetching workers by category:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [allWorkersList]);
+    },
+    [allWorkersList]
+  );
 
   return (
-    <ScrollView style={{backgroundColor:'#fff'}}>
     <View style={styles.container}>
       <Text style={styles.title}>Hire</Text>
 
       {/* Searchbar */}
-      <Searchbar 
-        workersList={workersList} 
-        onSearch={(filteredList) => setFilteredWorkers(filteredList)} 
+      <Searchbar
+        workersList={workersList}
+        onSearch={(filteredList) => setFilteredWorkers(filteredList)}
       />
 
       {/* Category Selector */}
-      <Category 
-        explore={true} 
-        onCategorySelect={(category) => GetWorkersByCategory(category)} 
+      <Category
+        explore={true}
+        onCategorySelect={(category) => GetWorkersByCategory(category)}
       />
 
-      {/* Workers List or Loader */}
-      {loading ? (
-        <ActivityIndicator size="large" color={Colors.PRIMARY} style={styles.loader} />
-      ) : (
-        <HireWorkersList workersList={filteredWorkers} />
-      )}
+      {/* Scrollable Content */}
+      <ScrollView style={styles.scrollContainer}>
+        {/* Workers List or Loader */}
+        {loading ? (
+          <ActivityIndicator size="large" color={Colors.PRIMARY} style={styles.loader} />
+        ) : (
+          <HireWorkersList workersList={filteredWorkers} />
+        )}
+      </ScrollView>
     </View>
-    </ScrollView> 
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    backgroundColor: '#fff',
     padding: 20,
     marginTop: 20,
   },
   title: {
     fontSize: 30,
     fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  scrollContainer: {
+    marginTop: 10,
   },
   loader: {
     marginVertical: 20,

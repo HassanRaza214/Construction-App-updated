@@ -4,7 +4,7 @@ import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { collection, getDocs, limit, query, where } from "firebase/firestore"; // Firebase Firestore functions
 import { db } from "../../configs/FireBaseConfig"; // Firebase database configuration
 import ShopHeader from '../../components/ShopDetail/ShopHeader';
-import Products from '../../components/ShopDetail/ShopProducts';
+import ShopProducts from '../../components/ShopDetail/ShopProducts';
 
 export default function ProductsListByShop() {
     const { shopid } = useLocalSearchParams();
@@ -44,7 +44,8 @@ export default function ProductsListByShop() {
 
     return (
 
-        <View>
+        <View style={{flex:1}}>
+            <View style={{flex:1}}>
             <FlatList
                 data={shopDetails}
                 renderItem={({ item, index }) => (
@@ -54,16 +55,39 @@ export default function ProductsListByShop() {
                     />
                 )}
             />
-            <FlatList
-                data={products}
-                renderItem={({ item, index }) => (
-                    <Products
-                        product={item}
-                        key={index}
-                    />
-                )}
-            />
+            </View>
+            <View style={{flex:5}}>
+            <ShopProducts products={products}/>
+            </View>
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+      paddingHorizontal: 20,
+    },
+    title: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      marginBottom: 16,
+    },
+    imageContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+    },
+    image: {
+      width: '48%',
+      height: 130,
+      marginBottom: 12,
+      borderRadius:15
+    },
+    separator: {
+      borderBottomColor: '#e0e0e0',
+      borderBottomWidth: 1,
+      marginVertical: 16,
+    },
+  });
+  
 
