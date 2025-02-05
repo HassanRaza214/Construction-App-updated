@@ -3,13 +3,12 @@ import React, { useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons'; 
 import { Colors } from './../../constants/Colors';
 
-export default function Searchbar({ productsList = [], onSearch }) {
+export default function SearchBar({ productsList = [], onSearch }) {
     const [searchQuery, setSearchQuery] = useState('');
 
     const handleSearch = (query) => {
         setSearchQuery(query);
 
-        // Remove the redundant (productsList || []) check
         const filteredProducts = productsList.filter(product =>
             product.name?.toLowerCase()?.includes(query.toLowerCase())
         );

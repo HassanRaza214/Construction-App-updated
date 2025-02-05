@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, FlatList, ActivityIndicator } from 'react-native';
-import Searchbar from '../../components/Hire/Searchbar';
+import SearchBar from '../../components/Shops/SearchBar';
 import PopularShops from '../../components/Home/PopularShops';
 import Products from '../../components/Shops/Products';
 import { query, collection, getDocs, where } from "firebase/firestore";
@@ -45,7 +45,7 @@ export default function Shops() {
       {/* Heading and Searchbar with Padding */}
       <View style={styles.headerContainer}>
         <Text style={styles.title}>Shops</Text>
-      <Searchbar
+      <SearchBar
         productsList={productsList}
         onSearch={(filteredList) => setFilteredproducts(filteredList)}
       />
