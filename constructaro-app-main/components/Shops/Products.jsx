@@ -4,29 +4,11 @@ import { db } from "../../configs/FireBaseConfig"; // Firebase database configur
 import React, { useState, useEffect } from 'react';
 import { Colors } from '../../constants/Colors';
 
-export default function Products() {
+export default function Products({products}) {
 
-    const [products, setProducts] = useState([]);
-
-    const getProductsList = async () => {
-        setProducts([])
-        const q = query(collection(db, 'ItemsList'));
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
-            console.log(doc.data());
-            setProducts(prev => [...prev, doc.data()])
-        })
-    }
-
-    useEffect(() => {
-        getProductsList();
-    }, []);
     return (
-        <View style={{padding:20}}>
-            <Text style={{fontSize: 20, fontWeight: 'bold' }}>Products</Text>
-            <FlatList
-                data={products}
-                renderItem={({ item, index }) => (
+        <View >
+
                         <TouchableOpacity
                           style={{
                             padding: 10, // Padding around the card content
@@ -41,7 +23,7 @@ export default function Products() {
                           
                           {/*  product image */}
                           <Image 
-                            source={{ uri: item.imageUrl }} // URL for worker's profile image
+                            source={{ uri: products.imageUrl }} // URL for worker's profile image
                             style={{
                               width: 80, // Image width
                               height: 80, // Image height
@@ -63,7 +45,7 @@ export default function Products() {
                               fontSize: 18, // Font size for worker name
                               fontWeight: 700, // Bold font for worker name
                             }}>
-                              {item.name} {/* Displaying the worker's name */}
+                              {products.name} {/* Displaying the worker's name */}
                             </Text>
                             
                             {/* Worker city */}
@@ -72,7 +54,7 @@ export default function Products() {
                               fontWeight: 400, // Regular font weight for city text
                               color: Colors.GRAY, // Gray color for city text
                             }}>
-                              Rs.{item.price} {/* Displaying the worker's city */}
+                              Rs.{products.price} {/* Displaying the worker's city */}
                             </Text>
                             
                             {/* Rating section */}
@@ -94,8 +76,7 @@ export default function Products() {
                             </View>
                           </View>
                         </TouchableOpacity>
-                )}
-            />
+
         </View>
     )
 }

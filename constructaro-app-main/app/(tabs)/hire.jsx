@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
 import { query, collection, getDocs, where } from "firebase/firestore";
 import { db } from "../../configs/FireBaseConfig";
 import { Colors } from './../../constants/Colors';
 import Category from '../../components/Home/Category';
-import HireWorkersList from '../../components/Hire/HireWorkersList';
+import WorkersListCard from '../../components/Hire/WorkersListCard';
 import Searchbar from '../../components/Hire/Searchbar';
 
 export default function Hire() {
@@ -64,6 +64,10 @@ export default function Hire() {
     [allWorkersList]
   );
 
+  const renderWorkerCard = ({ item }) => (
+    <WorkersListCard worker={item} />
+  );
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Hire</Text>
@@ -80,15 +84,22 @@ export default function Hire() {
         onCategorySelect={(category) => GetWorkersByCategory(category)}
       />
 
-      {/* Scrollable Content */}
-      <ScrollView style={styles.scrollContainer}>
-        {/* Workers List or Loader */}
-        {loading ? (
-          <ActivityIndicator size="large" color={Colors.PRIMARY} style={styles.loader} />
-        ) : (
-          <HireWorkersList workersList={filteredWorkers} />
-        )}
-      </ScrollView>
+      {/* Workers List or Loader */}
+      {loading ? (
+        <ActivityIndicator size="large" color={Colors.PRIMARY} style={styles.loader} />
+      ) : (
+        <FlatList
+          data={filteredWorkers}
+          renderItem={renderWorkerCard}
+          keyExtractor={(item) => item.id.toString()}
+          ListEmptyComponent={() => (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>No workers found</Text>
+            </View>
+          )}
+          contentContainerStyle={styles.listContainer}
+        />
+      )}
     </View>
   );
 }
@@ -105,10 +116,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
   },
-  scrollContainer: {
-    marginTop: 10,
+  listContainer: {
+    paddingBottom: 20,
   },
   loader: {
     marginVertical: 20,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 50,
+  },
+  emptyText: {
+    fontSize: 18,
+    color: Colors.GRAY,
   },
 });

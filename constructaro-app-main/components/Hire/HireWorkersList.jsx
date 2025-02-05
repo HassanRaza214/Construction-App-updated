@@ -4,7 +4,6 @@ import WorkersListCard from './WorkersListCard'
 
 export default function HireWorkersList({workersList}) {
   return (
-    <View>
         <FlatList
         data={workersList}
         renderItem={({item,index})=>(
@@ -14,6 +13,5 @@ export default function HireWorkersList({workersList}) {
             />
         )}
         />
-    </View>
   )
 }
