@@ -27,7 +27,8 @@ export default function SearchBar({ productsList = [], onSearch }) {
         borderRadius: 50,
         height: 45,
         borderWidth: 1,
-        borderColor: Colors.PRIMARY
+        borderColor: Colors.PRIMARY,
+        marginBottom:-10
       }}>
         {/* Search icon */}
         <Ionicons 

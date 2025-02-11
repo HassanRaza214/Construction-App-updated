@@ -70,8 +70,10 @@ export default function Hire() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Hire</Text>
-
+      <View style={styles.header}>
+            <Text style={styles.headerText}>Hire</Text>
+            </View>
+<View style={styles.subContainer}>
       {/* Searchbar */}
       <Searchbar
         workersList={workersList}
@@ -100,6 +102,7 @@ export default function Hire() {
           contentContainerStyle={styles.listContainer}
         />
       )}
+      </View>
     </View>
   );
 }
@@ -108,8 +111,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    padding: 20,
-    marginTop: 20,
+  },
+  subContainer:{
+    padding:20
   },
   title: {
     fontSize: 30,
@@ -131,5 +135,19 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 18,
     color: Colors.GRAY,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight:'bold',
+    paddingTop:30
   },
 });

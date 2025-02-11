@@ -46,7 +46,6 @@ export default function PopularShops() {
                     display: "flex", // Enables flexbox layout
                     flexDirection: "row", // Positions items in a row
                     justifyContent: "space-between", // Space between title and 'View All'
-                    marginTop: 20, // Space above header
                 }}
             >
                 <Text

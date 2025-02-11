@@ -19,6 +19,7 @@ export default function PopularWorkersCard({ worker }) {
         padding: 10, // Padding inside the card for spacing
         backgroundColor: Colors.ICON_BG, // Background color for card from Colors constant
         borderRadius: 15, // Rounded edges for the card
+        marginBottom: 20
       }}
     >
       

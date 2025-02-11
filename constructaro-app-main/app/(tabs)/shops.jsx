@@ -43,8 +43,10 @@ export default function Shops() {
   return (
     <View style={styles.container}>
       {/* Heading and Searchbar with Padding */}
+            <View style={styles.header}>
+                  <Text style={styles.headerText}>Shop</Text>
+                  </View>
       <View style={styles.headerContainer}>
-        <Text style={styles.title}>Shops</Text>
       <SearchBar
         productsList={productsList}
         onSearch={(filteredList) => setFilteredproducts(filteredList)}
@@ -84,12 +86,11 @@ export default function Shops() {
 const styles = StyleSheet.create({
   container: {
     flex: 1, // Ensure the container takes full screen height
-    marginTop: 50,
-    backgroundColor: '#f9f9f9', // Optional: Add a light background color for better aesthetics
+    backgroundColor: '#fff', // Optional: Add a light background color for better aesthetics
   },
   headerContainer: {
     paddingHorizontal: 15, // Horizontal padding for consistent spacing
-    paddingBottom: 10,
+    padding:20
   },
   scrollContainer: {
     marginTop: 10, // Add spacing between the search bar and scroll content
@@ -103,5 +104,19 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingBottom: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight:'bold',
+    paddingTop:30
   },
 });
