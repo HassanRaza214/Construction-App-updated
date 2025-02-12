@@ -8,8 +8,6 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Colors } from './../../constants/Colors';
 
 export default function TabLayout() {
-  const[hirePress,setHirePress]=useState(false)
-  const[shopPress,setShopPress]=useState(false)
   return (
     <Tabs screenOptions={{
       headerShown:false,
@@ -24,23 +22,11 @@ export default function TabLayout() {
         options={{
           tabBarLabel:'Hire',
           tabBarIcon:({color})=><FontAwesome5 name="hire-a-helper" size={24} color={color} />
-        }}
-        listeners={{
-          tabPress:(e)=>{
-            setHirePress(true),
-            setShopPress(false)
-          }
         }}/>
         <Tabs.Screen name='shops' 
         options={{
           tabBarLabel:'Shops',
           tabBarIcon:({color})=><Entypo name="shop" size={24} color={color} />
-        }}
-        listeners={{
-          tabPress:(e)=>{
-            setShopPress(true),
-            setHirePress(false)
-          }
         }}/>
         <Tabs.Screen name='profile' 
         options={{

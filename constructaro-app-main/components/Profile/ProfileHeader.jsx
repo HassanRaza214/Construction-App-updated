@@ -1,9 +1,20 @@
-import React from 'react';
+import React ,{useEffect, useState} from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { Colors } from "../../constants/Colors";
+import { auth } from '../../configs/FireBaseConfig';
+
 
 export default function ProfileHeader() {
+    const [user, setUser] = useState(null);
+    useEffect(() => {
+      // Get the current user from Firebase Auth
+      const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+        setUser(currentUser);
+      });
+  
+      return unsubscribe;
+    }, []);
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -14,7 +25,7 @@ export default function ProfileHeader() {
       <View style={styles.content}>
         {/* Profile Section */}
         <View style={styles.profileSection}>
-          <Text style={styles.name}>Muhammad Hassan</Text>
+          <Text style={styles.name}>{user?.displayName || "User Name"}</Text>
         </View>
 
         {/* Menu Items */}
