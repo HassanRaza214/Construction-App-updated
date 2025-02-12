@@ -1,7 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
-import { Feather } from '@expo/vector-icons';
-import { Colors } from "../../constants/Colors";
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+
 
 export default function ProfileDetail() {
   return (

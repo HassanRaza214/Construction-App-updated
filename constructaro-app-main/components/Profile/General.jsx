@@ -1,8 +1,21 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Feather, MaterialIcons } from '@expo/vector-icons';
+import { signOut } from 'firebase/auth';
+import { auth } from '../../configs/FireBaseConfig';
+import { useRouter } from 'expo-router';
 
 export default function General() {
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      router.replace('/(auth)/login');
+    } catch (error) {
+      console.error('Error signing out: ', error);
+    }
+  };
   return (
     <View style={styles.container}>
         <View style={styles.header}>
@@ -24,8 +37,8 @@ export default function General() {
       </TouchableOpacity>
 
 
-      <TouchableOpacity style={styles.logoutButton}>
-        <Text style={styles.logoutText}>Log out</Text>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleSignOut}>
+        <Text style={styles.logoutText} >Log out</Text>
       </TouchableOpacity>
     </View>
   );
