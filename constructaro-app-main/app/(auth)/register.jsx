@@ -122,6 +122,17 @@ export default function Register() {
               value={confirmPassword}
               onChangeText={setConfirmPassword}
             />
+            <TouchableOpacity 
+              onPress={() => setShowPassword(!showPassword)}
+              style={styles.eyeIcon}
+            >
+              <Ionicons 
+                name={showPassword ? "eye-off-outline" : "eye-outline"} 
+                size={20} 
+                color="#6B7280" 
+              />
+            </TouchableOpacity>
+
           </View>
           
           <TouchableOpacity 

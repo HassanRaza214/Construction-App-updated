@@ -1,8 +1,29 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { auth } from '../../configs/FireBaseConfig';
 
 export default function ProfileDetail() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Get the current user from Firebase Auth
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#4F46E5" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -10,39 +31,45 @@ export default function ProfileDetail() {
         <Text style={styles.headerText}>Details</Text>
       </View>
 
-        <TouchableOpacity style={styles.creditCard}>
-          <View style={styles.creditContent}>
-            <View style={styles.creditTextContainer}>
-              <Text style={styles.creditText}>Name</Text>
-              <Text style={styles.creditAmount}>Muhammad Hassan Raza</Text>
-            </View>
+      {/* User Details */}
+      <TouchableOpacity style={styles.creditCard}>
+        <View style={styles.creditContent}>
+          <View style={styles.creditTextContainer}>
+            <Text style={styles.creditText}>Name</Text>
+            <Text style={styles.creditAmount}>{user?.displayName || "Not Provided"}</Text>
           </View>
-        </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
 
-        <TouchableOpacity style={styles.creditCard}>
-          <View style={styles.creditContent}>
-            <View style={styles.creditTextContainer}>
-              <Text style={styles.creditText}>Email</Text>
-              <Text style={styles.creditAmount}>testemail@gmail.com</Text>
-            </View>
+      <TouchableOpacity style={styles.creditCard}>
+        <View style={styles.creditContent}>
+          <View style={styles.creditTextContainer}>
+            <Text style={styles.creditText}>Email</Text>
+            <Text style={styles.creditAmount}>{user?.email || "Not Provided"}</Text>
           </View>
-        </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
 
-        <TouchableOpacity style={styles.creditCard}>
-          <View style={styles.creditContent}>
-            <View style={styles.creditTextContainer}>
-              <Text style={styles.creditText}>Mobile Number</Text>
-              <Text style={styles.creditAmount}>+923121234567</Text>
-            </View>
+      <TouchableOpacity style={styles.creditCard}>
+        <View style={styles.creditContent}>
+          <View style={styles.creditTextContainer}>
+            <Text style={styles.creditText}>Mobile Number</Text>
+            <Text style={styles.creditAmount}>{user?.phoneNumber || "Not Provided"}</Text>
           </View>
-        </TouchableOpacity>
-      </View>
-
+        </View>
+      </TouchableOpacity>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   header: {
     flexDirection: 'row',
@@ -55,23 +82,20 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 20,
-    fontWeight:'bold',
+    fontWeight: 'bold',
   },
   creditCard: {
     marginHorizontal: 16,
     backgroundColor: '#fff',
     borderRadius: 12,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,
     shadowRadius: 2,
     elevation: 2,
     borderWidth: 1,
     borderColor: '#f0f0f0',
-    margin:8
+    margin: 8,
   },
   creditContent: {
     flexDirection: 'row',
@@ -83,12 +107,12 @@ const styles = StyleSheet.create({
   },
   creditText: {
     fontSize: 15,
-    fontWeight: '00',
+    fontWeight: '500',
   },
   creditAmount: {
     fontSize: 16,
     fontWeight: '700',
     marginTop: 8,
-    color: 'black'
+    color: 'black',
   },
 });
