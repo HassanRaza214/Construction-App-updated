@@ -3,6 +3,7 @@ import { collection, getDocs, query } from "firebase/firestore"; // Firebase Fir
 import { db } from "../../configs/FireBaseConfig"; // Firebase database configuration
 import React, { useState, useEffect } from 'react';
 import { Colors } from '../../constants/Colors';
+import { router } from 'expo-router';
 
 export default function Products({ products }) {
 
@@ -31,6 +32,7 @@ export default function Products({ products }) {
           flexDirection: 'row', // Positions items in a row
           gap: 10, // Space between elements
         }}
+        onPress={()=>router.push('/productdetail/'+products.id)}
       >
 
         {/*  product image */}

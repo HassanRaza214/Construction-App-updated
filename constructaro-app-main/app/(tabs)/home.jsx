@@ -5,11 +5,13 @@ import Slider from '../../components/Home/Slider';
 import Category from '../../components/Home/Category';
 import PopularWorkers from '../../components/Home/PopularWorkers';
 import PopularShops from '../../components/Home/PopularShops';
+import ServiceMenu from '../../components/Home/ServiceMenu';
 
 export default function Home() {
   return (
     <ScrollView style={{ backgroundColor: "#ffffff" }}>
       <Header />
+      <ServiceMenu/>
       <Slider />
       <Category />
       <PopularWorkers />

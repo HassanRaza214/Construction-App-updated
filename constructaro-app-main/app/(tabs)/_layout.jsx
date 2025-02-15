@@ -5,6 +5,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Entypo from '@expo/vector-icons/Entypo';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import AntDesign from '@expo/vector-icons/AntDesign';
 import { Colors } from './../../constants/Colors';
 
 export default function TabLayout() {
@@ -22,6 +23,11 @@ export default function TabLayout() {
         options={{
           tabBarLabel:'Hire',
           tabBarIcon:({color})=><FontAwesome5 name="hire-a-helper" size={24} color={color} />
+        }}/>
+        <Tabs.Screen name='postajob'
+        options={{
+          tabBarLabel:'Post a Job',
+          tabBarIcon:({color})=><AntDesign name="pluscircleo" size={24} color={color} />
         }}/>
         <Tabs.Screen name='shops' 
         options={{

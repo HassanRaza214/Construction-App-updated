@@ -33,11 +33,11 @@ export default function workerdetails() {
     }
   };
   return (
-    <View>
+    <View style={{ flex: 1, backgroundColor: "#fff", marginTop:20, marginBottom:20 }}>
       {loading?
       <ActivityIndicator
       style={{
-        marginTop:'70%'
+        marginTop:'70%',
       }}
       size={'large'}
       color={Colors.PRIMARY}

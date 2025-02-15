@@ -38,7 +38,7 @@ export default function Slider() {
         style={{
           fontSize: 20, // Font size for the title
           paddingLeft: 20, // Left padding for alignment
-          paddingTop: 20, // Top padding for spacing
+          // paddingTop: 10, // Top padding for spacing
           marginBottom: 10, // Bottom margin for space below the title
           fontWeight: 700, // Bold font for title
         }}

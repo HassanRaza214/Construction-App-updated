@@ -29,8 +29,6 @@ export default function Register() {
     setIsLoading(true);
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      // Note: You might want to add additional code here to save the user's name
-      // to Firestore or another database since Firebase Auth doesn't store name
       router.replace('/(tabs)/home');
     } catch (error) {
       let errorMessage = 'An error occurred during sign up';
