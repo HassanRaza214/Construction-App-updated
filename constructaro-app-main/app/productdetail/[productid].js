@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ActivityIndicator, ScrollView, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { View, ActivityIndicator, ScrollView, StyleSheet } from "react-native";
 import { useLocalSearchParams } from 'expo-router';
 import { db } from "../../configs/FireBaseConfig";
 import { doc, getDoc } from "firebase/firestore";
-import { AntDesign } from "@expo/vector-icons";
-import { Rating } from "react-native-ratings";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Colors } from "../../constants/Colors";
+import { StatusBar } from "expo-status-bar";
 import Reviews from "../../components/Productdetail/Reviews";
 import Header from "../../components/Productdetail/Header";
+import Info from "../../components/Productdetail/Info";
+import AddToCart from "../../components/Productdetail/AddToCart";
+import ProductImage from "../../components/Productdetail/ProductImage";
+import { Colors } from "../../constants/Colors";
 
 export default function ProductDetailsScreen() {
   const { productid } = useLocalSearchParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     GetProductdetailById();
@@ -32,28 +33,23 @@ export default function ProductDetailsScreen() {
   };
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#000" style={styles.loader} />;
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color={Colors.PRIMARY} />
+      </View>
+    );
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header product={product}/>
-      <ScrollView>
-        <Image source={{ uri: product.imageUrl }} style={styles.productImage} />
-        <View style={styles.header}>
-          <Text style={styles.headerText}>{product.name}</Text>
-          <TouchableOpacity onPress={() => setIsFavorite(!isFavorite)}>
-            <AntDesign name={isFavorite ? "heart" : "hearto"} size={24} color={isFavorite ? "red" : "black"} />
-          </TouchableOpacity>
-        </View>
-        <Text style={styles.price}>Rs.{product.price}</Text>
-        <Text style={styles.description}>{product.detail}</Text>
-        <Reviews product={product}/>
+      <StatusBar style="dark" />
+      <Header product={product} />
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        <ProductImage product={product} />
+        <Info product={product} />
+        <Reviews product={product} />
       </ScrollView>
-      <TouchableOpacity style={styles.addToCartButton}>
-        <Text style={styles.addToCartText}>Add to Cart</Text>
-      </TouchableOpacity>
-
+      <AddToCart product={product} />
     </SafeAreaView>
   );
 }
@@ -63,55 +59,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  loader: {
+  loaderContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#fff',
   },
-  productImage: {
-    width: "100%",
-    height: 200,
-    borderRadius: 10,
-    resizeMode:'contain'
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  headerText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    paddingTop: 30,
-  },
-  price: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: Colors.PRIMARY,
-    marginTop: 5,
-    paddingHorizontal: 16,
-  },
-  description: {
-    fontSize: 16,
-    marginTop: 10,
-    color: "gray",
-    paddingHorizontal: 16,
-  },
-  addToCartButton: {
-    marginTop: 20,
-    backgroundColor: Colors.PRIMARY,
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-    marginHorizontal: 16,
-  },
-  addToCartText: {
-    color: "#fff",
-    textAlign: "center",
-    fontSize: 18,
-  },
+  scrollView: {
+    flex: 1,
+    backgroundColor: '#f8f8f8',
+  }
 });
+
