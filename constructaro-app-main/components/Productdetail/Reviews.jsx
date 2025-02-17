@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  ToastAndroid, 
-  StyleSheet,
-  Keyboard
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ToastAndroid, StyleSheet,Keyboard} from 'react-native';
 import { Rating } from 'react-native-ratings';
 import { Colors } from '../../constants/Colors';
 import { updateDoc, doc, arrayUnion } from 'firebase/firestore';

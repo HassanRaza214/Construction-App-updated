@@ -12,24 +12,27 @@ export default function ProductsListByShop() {
     const [shopDetails, setshopDetails] = useState([]);
     const [products, setProducts] = useState([]);
 
+
     const getshopDetail = async () => {
         const q = query(collection(db, 'ShopsList'), where('name', '==', shopid));
         const querySnapshot = await getDocs(q);
-
+        const shopData = [];
         querySnapshot.forEach((doc) => {
-            console.log(doc.data());
-            setshopDetails(prev => [...prev, doc.data()])
-        })
-    }
+            shopData.push({ id: doc.id, ...doc.data() });
+        });
+        setshopDetails(shopData);
+    };
+
 
     const getProductsList = async () => {
         const q = query(collection(db, 'ItemsList'), where('shopName', '==', shopid));
         const querySnapshot = await getDocs(q);
+        const productsData = [];
         querySnapshot.forEach((doc) => {
-            console.log(doc.data());
-            setProducts(prev => [...prev, doc.data()])
-        })
-    }
+            productsData.push({ id: doc.id, ...doc.data() }); // Include document ID
+        });
+        setProducts(productsData); // Replace the state with the new array
+    };
 
     useEffect(() => {
         navigation.setOptions({
@@ -57,7 +60,14 @@ export default function ProductsListByShop() {
             />
             </View>
             <View style={{flex:5}}>
-            <ShopProducts products={products}/>
+            <FlatList
+                data={products}
+                renderItem={({ item, index }) => (
+                    <ShopProducts
+                        products={item}
+                    />
+                )}
+            />
             </View>
         </View>
     );

@@ -18,7 +18,7 @@ export default function ProductInfo({ product }) {
         </Text>
       </View>
       
-      <Text style={styles.price}>₹{product.price?.toLocaleString() || '0'}</Text>
+      <Text style={styles.price}>Rs.{product.price?.toLocaleString() || '0'}</Text>
       
       <View style={styles.divider} />
       

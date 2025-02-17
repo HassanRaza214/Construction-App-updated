@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Colors } from '../../constants/Colors';
 
 export default function Header({ product }) {
   const router = useRouter();

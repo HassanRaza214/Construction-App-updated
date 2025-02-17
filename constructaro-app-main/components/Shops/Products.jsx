@@ -1,7 +1,5 @@
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native'
-import { collection, getDocs, query } from "firebase/firestore"; // Firebase Firestore functions
-import { db } from "../../configs/FireBaseConfig"; // Firebase database configuration
-import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, Image } from 'react-native'
+import React from 'react';
 import { Colors } from '../../constants/Colors';
 import { router } from 'expo-router';
 

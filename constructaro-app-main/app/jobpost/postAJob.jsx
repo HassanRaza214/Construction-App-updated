@@ -37,24 +37,6 @@ export default function postAJob() {
     { label: 'Fixed Price', value: 'fixed' }
   ];
 
-  const handleSubmit = () => {
-    const formData = {
-      jobTitle,
-      skills: skills.split(',').map(skill => skill.trim()),
-      difficulty,
-      experienceLevel,
-      budget: {
-        type: budgetType,
-        amount: budgetAmount
-      },
-      description
-    };
-
-    console.log('Form submitted:', formData);
-    // Here you would typically send this data to your API
-    alert('Job Posted Successfully!');
-  };
-
   const openPickerModal = (type) => {
     setModalType(type);
     setModalVisible(true);

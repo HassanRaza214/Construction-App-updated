@@ -6,6 +6,7 @@ import Products from '../../components/Shops/Products';
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../configs/FireBaseConfig";
 import { Colors } from '../../constants/Colors';
+import Cart from '../../components/Cart/Cart';
 
 export default function Shops() {
     const [productsList, setproductsList] = useState([]);
@@ -72,6 +73,7 @@ export default function Shops() {
                     contentContainerStyle={styles.listContainer}
                 />
             )}
+            <Cart/>
         </View>
     );
 }

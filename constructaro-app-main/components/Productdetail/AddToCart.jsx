@@ -2,10 +2,15 @@ import React, { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated, ToastAndroid } from 'react-native';
 import { Colors } from '../../constants/Colors';
 import { AntDesign } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { setDoc, getDoc, updateDoc, doc } from 'firebase/firestore';
+import { db } from '../../configs/FireBaseConfig';
+import { auth } from '../../configs/FireBaseConfig';
 
 export default function AddToCart({ product }) {
     const [quantity, setQuantity] = useState(1);
     const buttonScale = useRef(new Animated.Value(1)).current;
+    const router = useRouter();
 
     const handlePressIn = () => {
         Animated.spring(buttonScale, {
@@ -20,30 +25,76 @@ export default function AddToCart({ product }) {
             useNativeDriver: true,
         }).start();
     };
-
-    const addToCart = () => {
-        // This would be replaced with actual cart functionality
-        ToastAndroid.show(`Added ${quantity} item(s) to cart`, ToastAndroid.SHORT);
+    
+    const addToCart = async () => {
+        try {
+            const user = auth.currentUser;
+        
+            if (!user) {
+                ToastAndroid.show('User not authenticated', ToastAndroid.BOTTOM);
+                return;
+            }
+        
+            // Reference to the specific product in the user's cart
+            const productCartRef = doc(db, `users/${user.uid}/cart`, product.id);
+            
+            // Check if this product already exists in the cart
+            const productDoc = await getDoc(productCartRef);
+            
+            if (productDoc.exists()) {
+                // Product exists in cart, update quantity
+                const currentQuantity = productDoc.data().Quantity;
+                const newQuantity = currentQuantity + quantity;
+                await updateDoc(productCartRef, {
+                    Quantity: newQuantity,
+                    TotalPrice: newQuantity * product.price,
+                });
+            } else {
+                // Product doesn't exist in cart, add it
+                const totalPrice = quantity * product.price;
+                await setDoc(productCartRef, {
+                    ProductId: product.id,
+                    ProductName: product.name,
+                    ShopName: product.shopName,
+                    Quantity: quantity,
+                    DateAdded: new Date(),
+                    Price: product.price,
+                    TotalPrice: totalPrice,
+                });
+            }
+        
+            ToastAndroid.show('Product Added...', ToastAndroid.BOTTOM);
+        } catch (error) {
+            console.error('Error Adding Product:', error);
+            ToastAndroid.show('Failed to Add Product', ToastAndroid.BOTTOM);
+        }
     };
+
+    // Calculate total price based on quantity
+    const totalPrice = product.price * quantity;
 
     return (
         <View style={styles.container}>
-            <View style={styles.quantityContainer}>
-                <TouchableOpacity
-                    onPress={() => quantity > 1 && setQuantity(quantity - 1)}
-                    style={[styles.quantityButton, quantity <= 1 && styles.disabledButton]}
-                >
-                    <AntDesign name="minus" size={16} color="#FFF" />
-                </TouchableOpacity>
+            <Text style={styles.priceText}>Rs.{totalPrice.toFixed(2)}</Text>
+            <View style={styles.leftContainer}>
+                <View style={styles.quantityContainer}>
+                    <TouchableOpacity
+                        onPress={() => quantity > 1 && setQuantity(quantity - 1)}
+                        style={[styles.quantityButton, quantity <= 1 && styles.disabledButton]}
+                    >
+                        <AntDesign name="minus" size={16} color="#FFF" />
+                    </TouchableOpacity>
 
-                <Text style={styles.quantityText}>{quantity}</Text>
+                    <Text style={styles.quantityText}>{quantity}</Text>
 
-                <TouchableOpacity
-                    onPress={() => setQuantity(quantity + 1)}
-                    style={styles.quantityButton}
-                >
-                    <AntDesign name="plus" size={16} color="#FFF" />
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => setQuantity(quantity + 1)}
+                        style={styles.quantityButton}
+                    >
+                        <AntDesign name="plus" size={16} color="#FFF" />
+                    </TouchableOpacity>
+                </View>
+                
             </View>
 
             <Animated.View
@@ -53,7 +104,10 @@ export default function AddToCart({ product }) {
                 ]}
             >
                 <TouchableOpacity
-                    onPress={addToCart}
+                    onPress={() => {
+                        addToCart(); 
+                        router.back();
+                    }}
                     style={styles.addToCartButton}
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
@@ -82,12 +136,17 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 5,
     },
+    leftContainer: {
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+    },
     quantityContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: Colors.PRIMARY,
         borderRadius: 10,
         overflow: 'hidden',
+        marginBottom: 4,
     },
     quantityButton: {
         padding: 10,
@@ -107,6 +166,12 @@ const styles = StyleSheet.create({
         minWidth: 30,
         textAlign: 'center',
     },
+    priceText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: Colors.PRIMARY,
+        padding:10
+    },
     buttonContainer: {
         flex: 1,
     },
@@ -123,6 +188,3 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
-
-
-
