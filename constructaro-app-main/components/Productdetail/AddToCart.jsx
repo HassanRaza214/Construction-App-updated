@@ -1,9 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated, ToastAndroid } from 'react-native';
 import { Colors } from '../../constants/Colors';
 import { AntDesign } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { setDoc, getDoc, updateDoc, doc } from 'firebase/firestore';
+import { setDoc, getDoc, updateDoc, doc, getDocs, collection } from 'firebase/firestore';
 import { db } from '../../configs/FireBaseConfig';
 import { auth } from '../../configs/FireBaseConfig';
 
@@ -11,6 +11,9 @@ export default function AddToCart({ product }) {
     const [quantity, setQuantity] = useState(1);
     const buttonScale = useRef(new Animated.Value(1)).current;
     const router = useRouter();
+    const [cartTotal, setCartTotal] = useState(0);
+    
+    const user = auth.currentUser;
 
     const handlePressIn = () => {
         Animated.spring(buttonScale, {
@@ -26,29 +29,35 @@ export default function AddToCart({ product }) {
         }).start();
     };
     
+
     const addToCart = async () => {
         try {
-            const user = auth.currentUser;
-        
             if (!user) {
                 ToastAndroid.show('User not authenticated', ToastAndroid.BOTTOM);
                 return;
             }
-        
+            
             // Reference to the specific product in the user's cart
             const productCartRef = doc(db, `users/${user.uid}/cart`, product.id);
             
             // Check if this product already exists in the cart
             const productDoc = await getDoc(productCartRef);
             
+            let newTotalCartPrice = cartTotal; // Start with the current total
+    
             if (productDoc.exists()) {
                 // Product exists in cart, update quantity
                 const currentQuantity = productDoc.data().Quantity;
                 const newQuantity = currentQuantity + quantity;
+                const newTotalPrice = newQuantity * product.price;
+    
                 await updateDoc(productCartRef, {
                     Quantity: newQuantity,
-                    TotalPrice: newQuantity * product.price,
+                    TotalPrice: newTotalPrice,
                 });
+    
+                // Update total cart price
+                newTotalCartPrice += quantity * product.price;
             } else {
                 // Product doesn't exist in cart, add it
                 const totalPrice = quantity * product.price;
@@ -60,15 +69,78 @@ export default function AddToCart({ product }) {
                     DateAdded: new Date(),
                     Price: product.price,
                     TotalPrice: totalPrice,
+                    Image:product.imageUrl
                 });
+    
+                // Update total cart price
+                newTotalCartPrice += totalPrice;
             }
-        
+    
+            // Save updated total cart price inside user's document in "cartTotals" collection
+            const cartTotalsRef = doc(db, `users/${user.uid}/cartTotals`, 'total');
+            await setDoc(cartTotalsRef, { 
+                totalAmount: newTotalCartPrice,
+                lastUpdated: new Date()
+            }, { merge: true });
+    
+            // Also update the user document for backward compatibility
+            const userDocRef = doc(db, `users/${user.uid}`);
+            await updateDoc(userDocRef, { TotalCartPrice: newTotalCartPrice });
+    
+            // Update UI state
+            setCartTotal(newTotalCartPrice);
+    
             ToastAndroid.show('Product Added...', ToastAndroid.BOTTOM);
         } catch (error) {
             console.error('Error Adding Product:', error);
             ToastAndroid.show('Failed to Add Product', ToastAndroid.BOTTOM);
         }
     };
+    
+
+    const calculateTotalCartPrice = async () => {
+        try {
+            const cartTotalRef = doc(db, `users/${user.uid}/cartTotals`, 'total');
+            const cartTotalDoc = await getDoc(cartTotalRef);
+            
+            if (cartTotalDoc.exists() && cartTotalDoc.data().totalAmount !== undefined) {
+                return cartTotalDoc.data().totalAmount;
+            }
+    
+            // Fallback: Calculate from cart items
+            const cartRef = collection(db, `users/${user.uid}/cart`);
+            const cartSnapshot = await getDocs(cartRef);
+    
+            let totalCartPrice = 0;
+            cartSnapshot.forEach((doc) => {
+                totalCartPrice += doc.data().TotalPrice || 0;
+            });
+    
+            // Update the new collection inside user's document
+            await setDoc(cartTotalRef, { 
+                totalAmount: totalCartPrice,
+                lastUpdated: new Date()
+            }, { merge: true });
+    
+            return totalCartPrice;
+        } catch (error) {
+            console.error("Error calculating cart total:", error);
+            return 0;
+        }
+    };
+    
+
+
+    useEffect(() => {
+        const fetchTotalPrice = async () => {
+            const total = await calculateTotalCartPrice();
+            setCartTotal(total);
+        };
+
+        fetchTotalPrice();
+    }, []);
+    
+
 
     // Calculate total price based on quantity
     const totalPrice = product.price * quantity;
@@ -94,7 +166,6 @@ export default function AddToCart({ product }) {
                         <AntDesign name="plus" size={16} color="#FFF" />
                     </TouchableOpacity>
                 </View>
-                
             </View>
 
             <Animated.View
