@@ -1,3 +1,4 @@
+
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
@@ -12,7 +13,6 @@ export default function ProductsListByShop() {
     const [shopDetails, setshopDetails] = useState([]);
     const [products, setProducts] = useState([]);
 
-
     const getshopDetail = async () => {
         const q = query(collection(db, 'ShopsList'), where('name', '==', shopid));
         const querySnapshot = await getDocs(q);
@@ -22,7 +22,6 @@ export default function ProductsListByShop() {
         });
         setshopDetails(shopData);
     };
-
 
     const getProductsList = async () => {
         const q = query(collection(db, 'ItemsList'), where('shopName', '==', shopid));
@@ -38,37 +37,57 @@ export default function ProductsListByShop() {
         navigation.setOptions({
             headerShown: true,
             headerTitle: shopid,
-
         });
         getshopDetail();
         getProductsList();
     }, []);
 
+    // Function to format products into pairs for rendering
+    const formatProductsForRendering = () => {
+        const formattedProducts = [];
+        for (let i = 0; i < products.length; i += 2) {
+            formattedProducts.push(
+                products.slice(i, i + 2)
+            );
+        }
+        return formattedProducts;
+    };
 
     return (
-
         <View style={{flex:1}}>
             <View style={{flex:1}}>
-            <FlatList
-                data={shopDetails}
-                renderItem={({ item, index }) => (
-                    <ShopHeader
-                        shop={item}
-                        key={index}
-                    />
-                )}
-            />
+                <FlatList
+                    data={shopDetails}
+                    renderItem={({ item, index }) => (
+                        <ShopHeader
+                            shop={item}
+                            key={index}
+                        />
+                    )}
+                />
             </View>
             <View style={{flex:5}}>
-            <FlatList
-                data={products}
-                renderItem={({ item, index }) => (
-                    <ShopProducts
-                        products={item}
-                    />
-                )}
-            />
+                <View style={{ backgroundColor: '#fff' }}>
+                    <View style={{ paddingTop: 20,paddingLeft:20, paddingBottom:10 }}>
+                        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Products</Text>
+                    </View>
+                
+                <FlatList
+                    data={formatProductsForRendering()}
+                    renderItem={({ item }) => (
+                        <View style={styles.rowContainer}>
+                            {item.map((product, index) => (
+                                <ShopProducts
+                                    key={product.id}
+                                    products={product}
+                                />
+                            ))}
+                        </View>
+                    )}
+                />
+                </View>
             </View>
+            
         </View>
     );
 }
@@ -77,25 +96,14 @@ const styles = StyleSheet.create({
     container: {
       paddingHorizontal: 20,
     },
+    rowContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingHorizontal: 20,
+    },
     title: {
       fontSize: 20,
       fontWeight: 'bold',
       marginBottom: 16,
     },
-    imageContainer: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent: 'space-between',
-    },
-    image: {
-      width: '48%',
-      height: 130,
-      marginBottom: 12,
-      borderRadius:15
-    },
-    separator: {
-      borderBottomColor: '#e0e0e0',
-      borderBottomWidth: 1,
-      marginVertical: 16,
-    },
-  });
+});

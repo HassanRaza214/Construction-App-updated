@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
     },
     itemText: {
         fontSize: 14,
-        color: '#333',
+        fontWeight:'bold',
+        color: '#000',
     }
 });

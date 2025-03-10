@@ -42,6 +42,7 @@ export default function Products({ products }) {
             borderRadius: 99, // Circular image
             borderWidth: 2, // Border width for image
             borderColor: Colors.GRAY, // Border color from Colors constant
+            resizeMode:'contain'
           }}
         />
 

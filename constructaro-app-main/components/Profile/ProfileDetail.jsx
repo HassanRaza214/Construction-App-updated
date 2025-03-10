@@ -1,20 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { auth } from '../../configs/FireBaseConfig';
+import { auth, db } from "../../configs/FireBaseConfig";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function ProfileDetail() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     // Get the current user from Firebase Auth
-    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+    const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
       setUser(currentUser);
       setLoading(false);
+
+      if (currentUser) {
+        await getUserData(currentUser.uid);
+      } else {
+        // Clear user data when logged out
+        setUserData(null);
+      }
     });
 
     return unsubscribe;
   }, []);
+
+  const getUserData = async (uid) => {
+    try {
+      const userDocRef = doc(db, "users", uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        setUserData(userDocSnap.data());
+      } else {
+        console.log("No such user document!");
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
 
   if (loading) {
     return (
@@ -54,7 +78,7 @@ export default function ProfileDetail() {
         <View style={styles.creditContent}>
           <View style={styles.creditTextContainer}>
             <Text style={styles.creditText}>Mobile Number</Text>
-            <Text style={styles.creditAmount}>{user?.phoneNumber || "Not Provided"}</Text>
+            <Text style={styles.creditAmount}>{userData?.phoneNumber || "Not Provided"}</Text>
           </View>
         </View>
       </TouchableOpacity>

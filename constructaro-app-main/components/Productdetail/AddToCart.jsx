@@ -6,14 +6,27 @@ import { useRouter } from 'expo-router';
 import { setDoc, getDoc, updateDoc, doc, getDocs, collection } from 'firebase/firestore';
 import { db } from '../../configs/FireBaseConfig';
 import { auth } from '../../configs/FireBaseConfig';
+import { onAuthStateChanged } from 'firebase/auth';
 
 export default function AddToCart({ product }) {
     const [quantity, setQuantity] = useState(1);
     const buttonScale = useRef(new Animated.Value(1)).current;
     const router = useRouter();
     const [cartTotal, setCartTotal] = useState(0);
-    
-    const user = auth.currentUser;
+    const [currentUser, setCurrentUser] = useState(null);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                setCurrentUser(user);
+            } else {
+                setCurrentUser(null);
+            }
+        });
+
+        // Cleanup subscription on unmount
+        return () => unsubscribe();
+    }, []);
 
     const handlePressIn = () => {
         Animated.spring(buttonScale, {
@@ -29,16 +42,57 @@ export default function AddToCart({ product }) {
         }).start();
     };
     
+    const calculateTotalCartPrice = async (userId) => {
+        try {
+            const cartTotalRef = doc(db, `users/${userId}/cartTotals`, 'total');
+            const cartTotalDoc = await getDoc(cartTotalRef);
+            
+            if (cartTotalDoc.exists() && cartTotalDoc.data().totalAmount !== undefined) {
+                return cartTotalDoc.data().totalAmount;
+            }
+    
+            // Fallback: Calculate from cart items
+            const cartRef = collection(db, `users/${userId}/cart`);
+            const cartSnapshot = await getDocs(cartRef);
+    
+            let totalCartPrice = 0;
+            cartSnapshot.forEach((doc) => {
+                totalCartPrice += doc.data().TotalPrice || 0;
+            });
+    
+            // Update the new collection inside user's document
+            await setDoc(cartTotalRef, { 
+                totalAmount: totalCartPrice,
+                lastUpdated: new Date()
+            }, { merge: true });
+    
+            return totalCartPrice;
+        } catch (error) {
+            console.error("Error calculating cart total:", error);
+            return 0;
+        }
+    };
+
+    useEffect(() => {
+        const fetchTotalPrice = async () => {
+            if (currentUser) {
+                const total = await calculateTotalCartPrice(currentUser.uid);
+                setCartTotal(total);
+            }
+        };
+
+        fetchTotalPrice();
+    }, [currentUser]);
 
     const addToCart = async () => {
         try {
-            if (!user) {
+            if (!currentUser) {
                 ToastAndroid.show('User not authenticated', ToastAndroid.BOTTOM);
                 return;
             }
             
             // Reference to the specific product in the user's cart
-            const productCartRef = doc(db, `users/${user.uid}/cart`, product.id);
+            const productCartRef = doc(db, `users/${currentUser.uid}/cart`, product.id);
             
             // Check if this product already exists in the cart
             const productDoc = await getDoc(productCartRef);
@@ -77,14 +131,14 @@ export default function AddToCart({ product }) {
             }
     
             // Save updated total cart price inside user's document in "cartTotals" collection
-            const cartTotalsRef = doc(db, `users/${user.uid}/cartTotals`, 'total');
+            const cartTotalsRef = doc(db, `users/${currentUser.uid}/cartTotals`, 'total');
             await setDoc(cartTotalsRef, { 
                 totalAmount: newTotalCartPrice,
                 lastUpdated: new Date()
             }, { merge: true });
     
             // Also update the user document for backward compatibility
-            const userDocRef = doc(db, `users/${user.uid}`);
+            const userDocRef = doc(db, `users/${currentUser.uid}`);
             await updateDoc(userDocRef, { TotalCartPrice: newTotalCartPrice });
     
             // Update UI state
@@ -96,51 +150,6 @@ export default function AddToCart({ product }) {
             ToastAndroid.show('Failed to Add Product', ToastAndroid.BOTTOM);
         }
     };
-    
-
-    const calculateTotalCartPrice = async () => {
-        try {
-            const cartTotalRef = doc(db, `users/${user.uid}/cartTotals`, 'total');
-            const cartTotalDoc = await getDoc(cartTotalRef);
-            
-            if (cartTotalDoc.exists() && cartTotalDoc.data().totalAmount !== undefined) {
-                return cartTotalDoc.data().totalAmount;
-            }
-    
-            // Fallback: Calculate from cart items
-            const cartRef = collection(db, `users/${user.uid}/cart`);
-            const cartSnapshot = await getDocs(cartRef);
-    
-            let totalCartPrice = 0;
-            cartSnapshot.forEach((doc) => {
-                totalCartPrice += doc.data().TotalPrice || 0;
-            });
-    
-            // Update the new collection inside user's document
-            await setDoc(cartTotalRef, { 
-                totalAmount: totalCartPrice,
-                lastUpdated: new Date()
-            }, { merge: true });
-    
-            return totalCartPrice;
-        } catch (error) {
-            console.error("Error calculating cart total:", error);
-            return 0;
-        }
-    };
-    
-
-
-    useEffect(() => {
-        const fetchTotalPrice = async () => {
-            const total = await calculateTotalCartPrice();
-            setCartTotal(total);
-        };
-
-        fetchTotalPrice();
-    }, []);
-    
-
 
     // Calculate total price based on quantity
     const totalPrice = product.price * quantity;
@@ -190,6 +199,7 @@ export default function AddToCart({ product }) {
         </View>
     );
 }
+
 
 const styles = StyleSheet.create({
     container: {
