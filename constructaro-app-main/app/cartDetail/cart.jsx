@@ -74,13 +74,14 @@ export default function CartScreen() {
         <Header />
         
         {/* Cart Items List */}
-        <FlatList
-          data={cart}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <CartProductCard cart={item} />}
-          scrollEnabled={false}
-          listKey="cartItems"
-        />
+<FlatList
+  data={cart}
+  keyExtractor={(item) => item.id}
+  renderItem={({ item }) => <CartProductCard cart={item} refreshCart={getCartData} />}
+  scrollEnabled={false}
+  listKey="cartItems"
+/>
+
 
         <View style={styles.container}>
           <TouchableOpacity onPress={() => { router.back(); }}>
