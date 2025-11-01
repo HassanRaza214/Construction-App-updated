@@ -2,6 +2,14 @@
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
+## Installation
+
+```bash
+npm install          # Install all dependencies
+npx expo start       # Start Expo development server
+npm run reset-project # Reset the project template
+```
+
 ## Get started
 
 1. Install dependencies
